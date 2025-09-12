@@ -58,12 +58,29 @@ This software can be installed onto a Raspberry OS Lite install. We recommend th
 </p>
 </td></tr></table>
 7. Close the EO enclosure, and apply power to it. The Raspberry Pi should boot, and if you got the configuration correct in step #3 above, it will then join your wireless network and you can log in with SSH (you should be able to find the RPi IP address from your broadband router). Note that the first time that you power up with a fresh SD card, it will take about five minutes to fully boot before it is seen on the network.
-8. Log onto your account on the RPi via SSH (e.g. PuTTY) over the WiFi network, and run the following commands. This will download the software from github and run the installation process, then reboots your RPi to allow the software to finish configuring and start up.
+8. Log onto your account on the RPi via SSH (e.g. PuTTY) over the WiFi network, and run ONE of the following install/update methods.
 
-~~~~
-curl -sSL https://github.com/minceheid/openeo/raw/refs/heads/main/openeo_download.py | python3 -
+### Option A: Install/Update from this GitHub repo (recommended)
+```
+curl -sSL https://raw.githubusercontent.com/sr-digitalhouse/openeo-solar/main/openeo_download.py | python3 -
 sudo reboot
-~~~~
+```
+
+### Option B: Install/Update from a local folder on your PC
+- macOS/Linux
+```
+export PI_HOST=raspberrypi.local
+ssh pi@$PI_HOST 'mkdir -p /home/pi/releases/openeo-local'
+rsync -av --delete "/path/to/openeo-0.5.4 SPMC/" pi@$PI_HOST:/home/pi/releases/openeo-local/
+ssh pi@$PI_HOST 'bash /home/pi/releases/openeo-local/openeo_deploy.bash && sudo reboot'
+```
+- Windows (PowerShell with OpenSSH)
+```
+$PI_HOST = "raspberrypi.local"
+ssh pi@$PI_HOST 'mkdir -p /home/pi/releases/openeo-local'
+scp -r "C:\\Users\\sr\\Downloads\\openeo-0.5.4 SPMC\\." pi@$PI_HOST:/home/pi/releases/openeo-local/
+ssh pi@$PI_HOST 'bash /home/pi/releases/openeo-local/openeo_deploy.bash'; ssh pi@$PI_HOST 'sudo reboot'
+```
 
 Once the Raspberry Pi reboots, it should all be working. You should be able to point your browser at the IP address (or you can use mDNS to navigate to _hostname_.local - where _hostname_ is whichever hostname you set in step 3 above). You should see the configuration web page, showing the charger status, and giving you control.
 
@@ -77,11 +94,12 @@ If this charger is used on a looped supply, a small fuse, or shares a supply wit
 The Load Balancing feature requires the use of a CT clamp on your inbound electricity supply, usually located at your meter. The settings page allows to set a site maximum current draw (the default is 60A). Vehicle charging will be limited to prevent openeo from exceeding this limit. As an example, if your site limit is set to 80A, and your site CT is reading 74A, then the maximum that openeo will allow you to charge your vehicle at is 6A.
 
 ## Updating
-From time to time, we will update the software. When a new release is tagged on GitHub, your openeo installation can be updated by simply repeating the install procedure. This will retrieve the latest release, install and activate it:
-~~~~
-curl -sSL https://github.com/minceheid/openeo/raw/refs/heads/main/openeo_download.py | python3 -
-sudo reboot
-~~~~
+Repeat either Option A or Option B above to update. The deploy script will re-point `/home/pi/openeo` to the new release and restart the service.
+
+### New: Solar Cloud Top-up
+- Enable in Settings → Load Management: "Solar Charging Enabled" and "Enable Solar Cloud Top-up".
+- Choose your minimum current (default 6A) and grace window (default 300s).
+- During brief solar dips, the charger maintains at least the minimum current from grid, respecting your site current limit, then returns to solar when surplus resumes.
 
 ## Configuration
 On first start, the default configuration will be loaded into the configuration database (stored in /home/pi/etc/config.db) - any settings changes (schedule timing, mode change, etc) are retained by updating this configuration database. To revert entirely to defaults, the /home/pi/etc/config.db file can be deleted, and the software restarted.
