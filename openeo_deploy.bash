@@ -48,11 +48,12 @@ sudo sh -c 'sed "s/#dtparam=spi=on/dtparam=spi=on/" </tmp/config.txt >/boot/firm
 chmod 755 /home/pi
 
 # link the openeo symlink to this release
-# using -r as a precaution because previous releases used this path as a directory
-# and making sure that we clear up properly. Also using sudo as some *very* old releases
-# ran as root, which may have left some root owned files
-rm -rf /home/pi/openeo
-ln -s $MYDIR /home/pi/openeo
+# Ensure we can replace legacy root-owned directories/symlinks from old installs
+# Remove existing target (directory or symlink) then recreate link with sudo
+if [ -e /home/pi/openeo ] || [ -L /home/pi/openeo ]; then
+    sudo rm -rf /home/pi/openeo
+fi
+sudo ln -s "$MYDIR" /home/pi/openeo
 
 #####################
 # Give Python the capability of binding to port 80. This will give our
