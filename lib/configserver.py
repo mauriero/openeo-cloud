@@ -498,7 +498,7 @@ class configserverClassPlugin(PluginSuperClass):
         def get_user_settings(self):
             """Called from the set_context method to update user settings."""
             settings = []
-            util.add_simple_setting(settings, 'number', "configserver", ("port",), 'Port',
+            util.add_simple_setting(self.config, settings, 'number', "configserver", ("port",), 'Port',
                 note='Recommended port 80.  Changing the port number requires a restart of openeo.  Changing to an inaccessible or unsupported port may render the openeo interface unusable, so take care.', \
                 range=(1,65535), step=1, default=80)
             return settings

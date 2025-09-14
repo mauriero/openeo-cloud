@@ -279,7 +279,7 @@ def main():
         
         # Notify submodules about new state.  Not all modules want to hear about state changes.
         # @TODO: actually -track- changes and only generate an event when something relevant changes
-        for module,modulename in globalState.stateDict["_moduleDict"].items():
+        for modulename, module in globalState.stateDict["_moduleDict"].items():
             try:
                 getattr(module, "sync_state")
             except AttributeError:
