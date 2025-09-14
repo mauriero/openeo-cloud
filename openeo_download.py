@@ -242,7 +242,9 @@ def main():
         verify_required_file(sha, "openeo_download.py")
 
         url = f"https://github.com/{GITHUB_REPO}/archive/{sha}.tar.gz"
-        destdir = f"openeo-{sha}"
+        # GitHub tarball extracts as '<repo-name>-<sha>'
+        repo_name = GITHUB_REPO.split('/')[-1]
+        destdir = f"{repo_name}-{sha}"
 
         print(f"Selected '{selected}' → {url} → {destdir}")
 
