@@ -89,7 +89,10 @@ def get_releases_and_branches() -> list[str]:
     for release in fetch_json(releases_url):
         release_date = datetime.fromisoformat(release["created_at"].replace("Z", "+00:00"))
         if release_date > CUTOFF_DATE:
-            releases.append(release["name"])
+            # Use the tag name (not the human title) to avoid spaces/special chars in refs
+            tag = release.get("tag_name")
+            if isinstance(tag, str) and len(tag.strip()) > 0:
+                releases.append(tag.strip())
 
     # Fetch branches
     branches_url = f"https://api.github.com/repos/{GITHUB_REPO}/branches"
