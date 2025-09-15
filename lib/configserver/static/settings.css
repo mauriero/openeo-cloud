@@ -1,4 +1,6 @@
 /* Settings page */
+/* Allow the page to scroll vertically (override any global overflow hidden) */
+body { overflow-y: auto; }
 .settings {
 	width: 50%;
 	display: flex;
