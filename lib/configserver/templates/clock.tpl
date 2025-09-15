@@ -8,7 +8,7 @@
 			<p>End: <span id="endTime">????</span></p>
 		</div>
 		<div class="inner-display-container" id="innerStateDisplay">
-			<p>No State</p>
+			<p>Initial SOC %</p>
 		</div>
 		<span class="current-display-container" id="currLim"></span>
 	</div>

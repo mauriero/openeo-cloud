@@ -24,7 +24,7 @@ SOFTWARE.
 """
 import logging,numbers,copy
 import logging.handlers
-import time, math
+import time, math, datetime
 import importlib
 
 import globalState, util
@@ -122,8 +122,7 @@ def main():
 
                         _LOGGER.debug("polled %s, amps_requested=%d" % (module_name, module_current))
         
-        # Solar top-up: if recent solar surplus existed but has dropped (e.g., clouds)
-        # maintain a minimum current with grid to prevent charging session stop.
+        # Solar top-up and energy-stop logic
         if "loadmanagement" in globalState.stateDict["_moduleDict"]:
             lm_config = globalState.stateDict["_moduleDict"]["loadmanagement"].pluginConfig
             if lm_config.get("solar_enable", False):
@@ -132,14 +131,22 @@ def main():
                     globalState.stateDict["eo_last_solar_surplus_ts"] = now_ts
 
                 min_current = int(max(6, lm_config.get("solar_topup_min_current", 6)))
-                recent_window = int(lm_config.get("solar_topup_recent_window_s", 300))
                 topup_allowed = bool(lm_config.get("solar_topup_enable", True))
+                # End-of-day cut-off replaces grace window
+                try:
+                    end_str = str(lm_config.get("solar_topup_end_time","16:00"))
+                    end_t = datetime.time(int(end_str[:2]), int(end_str[-2:]), 0, 0)
+                    now_t = datetime.datetime.now().time()
+                    within_day = now_t <= end_t
+                except Exception:
+                    within_day = True
 
                 charger_state = str(globalState.stateDict.get("eo_charger_state", ""))
                 car_present = charger_state in ("car-connected", "charging", "charge-suspended", "plug-present")
-                recent_solar = (now_ts - int(globalState.stateDict.get("eo_last_solar_surplus_ts", 0))) <= recent_window
+                # Require actual solar >= reservation + min_topup to allow grid top-up (prevents dawn mains start)
+                recent_solar = (globalState.stateDict.get("eo_current_solar",0) >= (lm_config.get("solar_reservation_current",1) + min_current))
 
-                if topup_allowed and car_present and recent_solar and globalState.stateDict["eo_amps_requested"] < min_current:
+                if topup_allowed and within_day and car_present and recent_solar and globalState.stateDict["eo_amps_requested"] < min_current:
                     # Respect site limit if it is already computed; we will clamp again later too
                     site_limit_current = lm_config.get("site_limit_current", 60)
                     ct_vehicle = globalState.stateDict.get('eo_current_vehicle', 0)
@@ -151,6 +158,27 @@ def main():
                     globalState.stateDict["eo_solar_topup_active"] = True
                 else:
                     globalState.stateDict["eo_solar_topup_active"] = False
+
+            # Energy-based stop using capacity and SOC
+            # Track delivered energy during the running session and stop when target reached.
+            try:
+                cap_kwh = float(lm_config.get("ev_battery_capacity_kwh", 40))
+                end_pct = float(lm_config.get("end_soc_pct", 100))
+                init_pct = float(globalState.configDB.get("chargeroptions","initial_soc_pct", 0) or 0)
+                target_kwh = max(0.0, (end_pct - init_pct) * cap_kwh / 100.0)
+            except Exception:
+                target_kwh = 0.0
+
+            # Integrate energy only while charging current > 0
+            if target_kwh > 0 and globalState.stateDict.get("eo_current_vehicle",0) > 0 and globalState.stateDict.get("eo_live_voltage",0) > 0:
+                # energy increment per loop (kWh) = P(kW) * dt(h)
+                dt_h = 5.0 / 3600.0  # loop is 5s
+                p_kw = (globalState.stateDict["eo_live_voltage"] * globalState.stateDict["eo_current_vehicle"]) / 1000.0
+                incr = p_kw * dt_h
+                globalState.stateDict["eo_session_energy_kwh"] = globalState.stateDict.get("eo_session_energy_kwh",0.0) + incr
+
+            if target_kwh > 0 and globalState.stateDict.get("eo_session_energy_kwh",0.0) >= target_kwh:
+                globalState.stateDict["eo_amps_requested"] = 0
 
         if globalState.stateDict["eo_always_supply_current"]:
             globalState.stateDict["eo_amps_requested"] = 32
