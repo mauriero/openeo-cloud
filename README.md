@@ -66,7 +66,7 @@ curl -sSL https://raw.githubusercontent.com/sr-digitalhouse/openeo-solar/main/op
 sudo reboot
 ```
 
-### Option B: Install/Update from a local folder on your PC
+<!-- ### Option B: Install/Update from a local folder on your PC
 - macOS/Linux
 ```
 export PI_HOST=raspberrypi.local
@@ -84,7 +84,7 @@ ssh pi@$PI_HOST 'bash /home/pi/releases/openeo-local/openeo_deploy.bash'; ssh pi
 
 Once the Raspberry Pi reboots, it should all be working. You should be able to point your browser at the IP address (or you can use mDNS to navigate to _hostname_.local - where _hostname_ is whichever hostname you set in step 3 above). You should see the configuration web page, showing the charger status, and giving you control.
 
-*Note* - at this time, only the **_Schedule_** mode and **_Manual_** mode is available. We will be adding **_Remote_** (OCPP) shortly.
+*Note* - at this time, only the **_Schedule_** mode and **_Manual_** mode is available. We will be adding **_Remote_** (OCPP) shortly. -->
 
 ## Solar Integration
 Where there is a CT clamp measuring solar generation, openeo can control vehicle charge, based on the solar generation. To enable this feature, select the "Solar Charging Enabled" options in the settings. Additionally, you can optionally set a solar reservation value. As an example, if your CT clamp is reporting 10A of solar generation, and your Solar Reservation is set at 3A, then your vehicle will charge at 7A. This may allow you to reduce grid consumption for power requirements elsewhere in your home. The operation of solar charging **does not** require the manual override or a schedule to be active for it to charge the vehicle. To ensure that you make the most of solar generation, it is permanently active when this setting is enabled.
