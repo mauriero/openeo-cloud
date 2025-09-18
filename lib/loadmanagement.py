@@ -29,7 +29,7 @@ class loadmanagementClassPlugin(PluginSuperClass):
             "solar_topup_recent_window_s": {"type": "int", "default": 300},
             "solar_topup_end_time": {"type": "str", "default": "16:00"},
             "ev_battery_capacity_kwh": {"type": "int", "default": 40},
-            "end_soc_pct": {"type": "int", "default": 100},
+            "end_soc_pct": {"type": "int", "default": 80},
             "simulate_ct_solar":    {"type": "float", "default": 0.0},
             "simulate_ct_site":     {"type": "float", "default": 0.0},
             "ct_calibration_site":   {"type": "float", "default": 1.0},
@@ -78,7 +78,7 @@ class loadmanagementClassPlugin(PluginSuperClass):
             util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_topup_min_current",), 'Top-up Minimum Current', \
                 note="Minimum charging current to maintain during brief solar dips.", \
                 range=(6,16), default=6, value_unit="A")
-            util.add_simple_setting(self.pluginConfig, settings, 'textinput', "loadmanagement", ("solar_topup_end_time",), 'End Solar Charging at', \
-                note="End-of-day cut-off for solar charging and top-up (HH:MM, e.g. 16:00).", pattern="^((0[6-9])|(1[0-9])|(2[0-2])):(00|30)$")
+            util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_topup_end_time",), 'End Solar Charging at', \
+                note="End-of-day cut-off for solar charging and top-up (HHMM).", range=(1000,2200), step=30, default=1600)
 
         return settings

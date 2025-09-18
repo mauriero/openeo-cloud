@@ -132,10 +132,15 @@ def main():
                 topup_allowed = bool(lm_config.get("solar_topup_enable", True))
                 # End-of-day cut-off replaces grace window
                 try:
-                    end_str = str(lm_config.get("solar_topup_end_time","16:00"))
-                    end_t = datetime.time(int(end_str[:2]), int(end_str[-2:]), 0, 0)
-                    now_dt = datetime.datetime.now()
-                    now_t = now_dt.time()
+                    end_val = lm_config.get("solar_topup_end_time","1600")
+                    end_val_str = str(end_val)
+                    if ":" in end_val_str:
+                        end_t = datetime.time(int(end_val_str[:2]), int(end_val_str[-2:]), 0, 0)
+                    else:
+                        hh = int(end_val) // 100
+                        mm = int(end_val) % 100
+                        end_t = datetime.time(hh, mm, 0, 0)
+                    now_t = datetime.datetime.now().time()
                     within_day = now_t <= end_t
                 except Exception:
                     within_day = True

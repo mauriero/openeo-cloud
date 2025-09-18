@@ -25,7 +25,7 @@ class schedulerClassPlugin(PluginSuperClass):
     PRETTY_NAME = "Scheduler"
     CORE_PLUGIN = True  
     pluginParamSpec={ "enabled":      {"type": "bool","default": True},
-			"schedule": {"type": "json","default":'[{"start": "2200", "end": "0400", "amps": 32}]'}}
+			"schedule": {"type": "json","default":'[{"start": "2100", "end": "0100", "amps": 32}]'}}
     parsedSchedule = []
 
 
@@ -34,8 +34,13 @@ class schedulerClassPlugin(PluginSuperClass):
         self.parsedSchedule=[]
         for n, i in enumerate(self.pluginConfig["schedule"]):
             sched = {}
-            sched['start'] = datetime.time(int(i['start'][:2]), int(i['start'][-2:]),0,0)
-            sched['end'] = datetime.time(int(i['end'][:2]), int(i['end'][-2:]),0,0)
+            # Round to 10-minute steps
+            st_h, st_m = int(i['start'][:2]), int(i['start'][-2:])
+            en_h, en_m = int(i['end'][:2]), int(i['end'][-2:])
+            st_m = (st_m // 10) * 10
+            en_m = (en_m // 10) * 10
+            sched['start'] = datetime.time(st_h, st_m, 0, 0)
+            sched['end'] = datetime.time(en_h, en_m, 0, 0)
             sched['amps'] = int(i['amps'])
             self.parsedSchedule.append(sched)    
         
