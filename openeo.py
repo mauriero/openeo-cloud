@@ -127,8 +127,6 @@ def main():
             lm_config = globalState.stateDict["_moduleDict"]["loadmanagement"].pluginConfig
             if lm_config.get("solar_enable", False):
                 now_ts = int(time.time())
-                if globalState.stateDict["eo_amps_requested_solar"] > 0:
-                    globalState.stateDict["eo_last_solar_surplus_ts"] = now_ts
 
                 min_current = int(max(6, lm_config.get("solar_topup_min_current", 6)))
                 topup_allowed = bool(lm_config.get("solar_topup_enable", True))
@@ -136,17 +134,30 @@ def main():
                 try:
                     end_str = str(lm_config.get("solar_topup_end_time","16:00"))
                     end_t = datetime.time(int(end_str[:2]), int(end_str[-2:]), 0, 0)
-                    now_t = datetime.datetime.now().time()
+                    now_dt = datetime.datetime.now()
+                    now_t = now_dt.time()
                     within_day = now_t <= end_t
                 except Exception:
                     within_day = True
 
+                # Determine when we last had sufficient solar (reservation + min current)
+                solar_threshold = lm_config.get("solar_reservation_current",1) + min_current
+                if globalState.stateDict.get("eo_current_solar",0) >= solar_threshold:
+                    globalState.stateDict["eo_last_solar_surplus_ts"] = now_ts
+
+                last_ts = int(globalState.stateDict.get("eo_last_solar_surplus_ts", 0))
+                try:
+                    last_day = datetime.datetime.fromtimestamp(last_ts).date() if last_ts > 0 else None
+                except Exception:
+                    last_day = None
+                had_solar_today = (last_day == datetime.datetime.now().date())
+
                 charger_state = str(globalState.stateDict.get("eo_charger_state", ""))
                 car_present = charger_state in ("car-connected", "charging", "charge-suspended", "plug-present")
-                # Require actual solar >= reservation + min_topup to allow grid top-up (prevents dawn mains start)
-                recent_solar = (globalState.stateDict.get("eo_current_solar",0) >= (lm_config.get("solar_reservation_current",1) + min_current))
 
-                if topup_allowed and within_day and car_present and recent_solar and globalState.stateDict["eo_amps_requested"] < min_current:
+                # Allow grid top-up only if: feature enabled, we're before end-of-day cut-off,
+                # a car is present, and we have seen sufficient solar at least once today.
+                if topup_allowed and within_day and car_present and had_solar_today and globalState.stateDict["eo_amps_requested"] < min_current:
                     # Respect site limit if it is already computed; we will clamp again later too
                     site_limit_current = lm_config.get("site_limit_current", 60)
                     ct_vehicle = globalState.stateDict.get('eo_current_vehicle', 0)
