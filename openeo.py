@@ -196,6 +196,16 @@ def main():
             if target_kwh > 0 and globalState.stateDict.get("eo_session_energy_kwh",0.0) >= target_kwh:
                 globalState.stateDict["eo_amps_requested"] = 0
 
+            # Reset energy when Initial SOC is (re)saved: detect change
+            try:
+                last_init = float(globalState.stateDict.get("_last_initial_soc_pct", -1))
+                current_init = float(globalState.configDB.get("chargeroptions","initial_soc_pct", 0) or 0)
+                if current_init != last_init:
+                    globalState.stateDict["_last_initial_soc_pct"] = current_init
+                    globalState.stateDict["eo_session_energy_kwh"] = 0.0
+            except Exception:
+                pass
+
         if globalState.stateDict["eo_always_supply_current"]:
             globalState.stateDict["eo_amps_requested"] = 32
         
