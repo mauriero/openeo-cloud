@@ -57,28 +57,37 @@ class loadmanagementClassPlugin(PluginSuperClass):
 
     def get_user_settings(self):
         settings = []
+        # 1. Solar Charging (always show)
         util.add_simple_setting(self.pluginConfig, settings, 'boolean', "loadmanagement", ("solar_enable",), 'Solar Charging Enabled', \
             note="This setting will allow openeo to charge, regardless of whether the manual or schedule mode is enabled", default=False)
+        # 2. Maximum Site Consumption (always show)
         util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("site_limit_current",), 'Maximum Site Consumption', \
             note="When a current sensor is installed on the site electrical feed, setting this value may restrict charger output if electricity consumption measured at the sensor is high.", \
             range=(1,100), default=60, value_unit="A")
 
+        # 3. EV Battery Capacity (always show)
+        util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("ev_battery_capacity_kwh",), 'EV Battery Capacity kWh', \
+            note="Estimated usable capacity of your EV battery.", range=(10,100), default=40, value_unit="kWh")
+        # 4. End Charging at % (always show; applies to both schedule and solar)
+        util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("end_soc_pct",), 'End Charging at %', \
+            note="Target state-of-charge to stop at if reached before end time.", range=(50,100), step=5, default=80, value_unit="%")
+
+        # Show remaining rows only when Solar Charging is enabled
         if self.pluginConfig.get("solar_enable", False):
+            # 5. Solar Reservation Current
             util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_reservation_current",), 'Solar Reservation Current', \
                 note="Solar charging will be reduced by this number of amps to reserve some capacity for site base load.", \
                 range=(0,8), default=1, value_unit="A")
 
-            util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("ev_battery_capacity_kwh",), 'EV Battery Capacity kWh', \
-                note="Estimated usable capacity of your EV battery.", range=(10,100), default=40, value_unit="kWh")
-            util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("end_soc_pct",), 'End Charging at %', \
-                note="Target state-of-charge to stop at if reached before schedule end.", range=(50,100), step=5, default=100, value_unit="%")
-
-            util.add_simple_setting(self.pluginConfig, settings, 'boolean', "loadmanagement", ("solar_topup_enable",), 'Enable Mains Cloud Top-up', \
+            # 6. Mains Cloud Top-up (label shortened as requested)
+            util.add_simple_setting(self.pluginConfig, settings, 'boolean', "loadmanagement", ("solar_topup_enable",), 'Mains Cloud Top-up', \
                 note="When solar briefly drops (e.g. clouds), use grid to maintain a minimum current until the configured daytime cut-off.", default=True)
+            # 7. Top-up Minimum Current
             util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_topup_min_current",), 'Top-up Minimum Current', \
                 note="Minimum charging current to maintain during brief solar dips.", \
                 range=(6,16), default=6, value_unit="A")
-            util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_topup_end_time",), 'End Solar Charging at', \
-                note="End-of-day cut-off for solar charging and top-up (HHMM).", range=(1000,2200), step=30, default=1600)
+            # 8. End Solar Charging at (time formatted HH:MM)
+            util.add_simple_setting(self.pluginConfig, settings, 'textinput', "loadmanagement", ("solar_topup_end_time",), 'End Solar Charging at', \
+                note="End-of-day cut-off for solar charging and top-up (HH:MM).", pattern="^((0[6-9])|(1[0-9])|(2[0-2])):(00|30)$")
 
         return settings
