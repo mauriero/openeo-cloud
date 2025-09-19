@@ -7,7 +7,7 @@
 			<p>From <span id="startTime">2100</span> to <span id="endTime">0100</span></p>
 		</div>
 		<div class="inner-display-container" id="innerStateDisplay">
-			<p>Initial SOC <span id="initialSocPct">0</span> %</p>
+			<p>Initial SOC <input id="initialSocInput" type="number" min="0" max="100" step="1" value="0" style="width:4em;"> %</p>
 			<p id="currentSocRow">Current SOC <span id="currentSocPct">0</span> %</p>
 		</div>
 		<span class="current-display-container" id="currLim"></span>
