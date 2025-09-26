@@ -18,7 +18,7 @@ This software can be installed onto a Raspberry OS Lite install. We recommend th
 
 1.  Obtain a 8GB (or larger) micro SD card
 
-2.  Flash the SD card with the Raspberry PI imager (Device: Raspberry Pi Zero, Operating System: Raspberry PI OS Lite (32 bit))
+2.  Flash the SD card with the Raspberry PI imager (Device: Raspberry Pi Zero, Operating System: Raspberry PI OS Lite (32 bit)
 
 <p align="center">
 <img width="468" height="294" alt="Raspbpi" src="https://github.com/user-attachments/assets/c62055ef-a389-4d8e-aa0e-ece564aebbbb" />
