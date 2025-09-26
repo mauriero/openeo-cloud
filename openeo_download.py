@@ -23,7 +23,7 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 
-GITHUB_REPO = "sr-digitalhouse/openeo-solar"
+GITHUB_REPO = "mauriero/openeo-cloud"
 RELEASEDIR = "/home/pi/releases"
 CUTOFF_DATE = datetime(2025, 7, 31, tzinfo=timezone.utc)
 
