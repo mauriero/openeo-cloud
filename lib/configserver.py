@@ -43,7 +43,13 @@ class ThreadedServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     def server_bind(self):
         # Set socket options before binding
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        # SO_REUSEPORT is not available on all platforms/kernels; guard its use
+        try:
+            if hasattr(socket, "SO_REUSEPORT"):
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        except Exception:
+            # If unsupported or fails, continue without it
+            pass
         super().server_bind()
         
 #################################################################################
