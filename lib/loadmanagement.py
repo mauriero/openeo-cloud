@@ -27,7 +27,7 @@ class loadmanagementClassPlugin(PluginSuperClass):
             "solar_topup_enable":    {"type": "bool", "default": True},
             "solar_topup_min_current": {"type": "int", "default": 6},
             "solar_topup_recent_window_s": {"type": "int", "default": 300},
-            "solar_topup_end_time": {"type": "str", "default": "16:00"},
+            "solar_topup_end_time": {"type": "int", "default": 1600},
             "ev_battery_capacity_kwh": {"type": "int", "default": 40},
             "end_soc_pct": {"type": "int", "default": 80},
             "simulate_ct_solar":    {"type": "float", "default": 0.0},
@@ -44,8 +44,11 @@ class loadmanagementClassPlugin(PluginSuperClass):
         if (self.pluginConfig.get("solar_enable",False)):
             # Respect end-of-day cut-off for solar charging
             try:
-                end_str = self.pluginConfig.get("solar_topup_end_time","16:00")
-                end_t = datetime.time(int(end_str[:2]), int(end_str[-2:]), 0, 0)
+                end_val = self.pluginConfig.get("solar_topup_end_time", 1600)  # Default 16:00
+                # Convert slider value to time (e.g., 1630 -> 16:30)
+                end_hour = int(end_val // 100)
+                end_minute = int(end_val % 100)
+                end_t = datetime.time(end_hour, end_minute, 0, 0)
                 now = datetime.datetime.now().time()
                 if now > end_t:
                     return 0
@@ -67,9 +70,9 @@ class loadmanagementClassPlugin(PluginSuperClass):
 
         # 3. EV Battery Capacity (always show)
         util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("ev_battery_capacity_kwh",), 'EV Battery Capacity kWh', \
-            note="Estimated usable capacity of your EV battery.", range=(10,100), default=40, value_unit="kWh")
+            note="Estimated usable capacity of your EV battery.", range=(10,120), default=40, value_unit="kWh")
         # 4. End Charging at % (always show; applies to both schedule and solar)
-        util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("end_soc_pct",), 'End Charging at %', \
+        util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("end_soc_pct",), 'End Charging at', \
             note="Target state-of-charge to stop at if reached before end time.", range=(50,100), step=5, default=80, value_unit="%")
 
         # Show remaining rows only when Solar Charging is enabled
@@ -86,8 +89,9 @@ class loadmanagementClassPlugin(PluginSuperClass):
             util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_topup_min_current",), 'Top-up Minimum Current', \
                 note="Minimum charging current to maintain during brief solar dips.", \
                 range=(6,16), default=6, value_unit="A")
-            # 8. End Solar Charging at (time formatted HH:MM)
-            util.add_simple_setting(self.pluginConfig, settings, 'textinput', "loadmanagement", ("solar_topup_end_time",), 'End Solar Charging at', \
-                note="End-of-day cut-off for solar charging and top-up (HH:MM).", pattern="^((0[6-9])|(1[0-9])|(2[0-2])):(00|30)$")
+            # 8. End Solar Charging at (time slider from 12:00 to 22:00 in 30-minute intervals)
+            util.add_simple_setting(self.pluginConfig, settings, 'slider', "loadmanagement", ("solar_topup_end_time",), 'End Solar Charging at', \
+                note="End-of-day cut-off for solar charging and top-up (1200=12:00, 1630=16:30, 2200=22:00).", \
+                range=(1200, 2200), step=100, default=1600)
 
         return settings

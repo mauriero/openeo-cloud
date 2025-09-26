@@ -34,11 +34,21 @@ class schedulerClassPlugin(PluginSuperClass):
         self.parsedSchedule=[]
         for n, i in enumerate(self.pluginConfig["schedule"]):
             sched = {}
-            # Round to 10-minute steps
+            # Round to nearest 10-minute steps
             st_h, st_m = int(i['start'][:2]), int(i['start'][-2:])
             en_h, en_m = int(i['end'][:2]), int(i['end'][-2:])
-            st_m = (st_m // 10) * 10
-            en_m = (en_m // 10) * 10
+            st_round = int(round(st_m / 10.0) * 10)
+            en_round = int(round(en_m / 10.0) * 10)
+            if st_round == 60:
+                st_h = (st_h + 1) % 24
+                st_m = 0
+            else:
+                st_m = st_round
+            if en_round == 60:
+                en_h = (en_h + 1) % 24
+                en_m = 0
+            else:
+                en_m = en_round
             sched['start'] = datetime.time(st_h, st_m, 0, 0)
             sched['end'] = datetime.time(en_h, en_m, 0, 0)
             sched['amps'] = int(i['amps'])

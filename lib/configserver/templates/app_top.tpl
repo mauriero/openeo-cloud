@@ -22,7 +22,6 @@
 			<div class="logo" id="logo">
 				<div class="logo-inner">
 					<a href="https://github.com/minceheid/openeo">
-						<span class="logo-text">openeo</span>
 						<img src="static/openeo_vector_glyph_lightmono.svg" width="50" height="50"/>
 					</a>
 				</div>
@@ -32,6 +31,7 @@
 			<div class="minimal-status" id="minimalStatus">
 				<p><span id="evseName" class="evse-name">&nbsp;{{ status['charger_name'] }}&nbsp;</span></p>
 				<p><span id="modeName" class="mode-name"></span></p>
+				<p><span id="solarStatus" class="solar-status"></span></p>
 			</div>
 		</div>
 		{% include 'mode_switch.tpl' %}

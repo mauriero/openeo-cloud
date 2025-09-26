@@ -28,7 +28,8 @@ class chargeroptionsClassPlugin(PluginSuperClass):
                         "limit_current_to_solar_output":  {"type": "bool","default":False},
                         "charger_name":  {"type": "str","default":"openeo"},
                         "charger_id":  {"type": "str","default":"openeo_1"},
-                        "log_level":  {"type": "str","default":"info"}}
+                        "log_level":  {"type": "str","default":"info"},
+                        "initial_soc_pct":  {"type": "int","default":40}}
 
     def configure(self, configParam):
         super().configure(configParam)
