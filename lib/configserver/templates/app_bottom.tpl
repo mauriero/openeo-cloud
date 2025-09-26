@@ -9,6 +9,6 @@
 		<span class="status-item" id="statusChargePower"></span>
 	</div>
 	<div class="version-info">
-		openeo {{ status['app_version'] }}
+		openeo-cloud {{ status['app_version'] }}
 	</div>
 </div>
