@@ -40,14 +40,18 @@ This software can be installed onto a Raspberry OS Lite install. We recommend th
 
 6.  Open the Mini Pro 2 box by loosening the four captive screws that are visible on the front of the case (you may need to remove the four rubber covers, if they are fitted), and you will see the Raspberry Pi Zero inside. You can now switch the SD cards, keeping the original safe. Whilst you are doing this take care to not accidentally dislodge the cables connecting the Raspberry Pi board with the main control board in the lid of the unit.
 
-7. Close the EO enclosure, and apply power to it. The Raspberry Pi should boot, and if you got the configuration correct in step #3 above, it will then join your wireless network and you can log in with SSH (you should be able to find the RPi IP address from your broadband router). Note that the first time that you power up with a fresh SD card, it will take about five minutes to fully boot before it is seen on the network. 8. Log onto your account on the RPi via SSH (e.g. using PuTTY) over the WiFi network, and run the following commands. This will download the software from GitHub and run the installation process, then reboots your RPi to allow the software to finish configuring and start up.
+7. Close the EO enclosure, and apply power to it. The Raspberry Pi should boot, and if you got the configuration correct in step #3 above, it will then join your wireless network and you can log in with SSH (you should be able to find the RPi IP address from your broadband router). Note that the first time that you power up with a fresh SD card, it will take about five minutes to fully boot before it is seen on the network.
+ 
+8. Log onto your account on the RPi via SSH (e.g. using PuTTY) over the WiFi network, and run the following commands. This will download the software from GitHub and run the installation process, then reboots your RPi to allow the software to finish configuring and start up.
 
 ```
 curl -sSL https://raw.githubusercontent.com/mauriero/openeo-cloud/main/openeo_download.py | python3 -
 sudo reboot
 ```
 
-Once the Raspberry Pi reboots, it should all be working. You should be able to point your browser at the IP address (or you can use mDNS to navigate to hostname.local in a web browser - where hostname is whichever hostname you set in step 3 above). You should see one of the Home screens.  On the Home screen there are 2 modes, **Manual** and **Schedule:**
+Once the Raspberry Pi reboots, it should all be working. You should be able to point your browser at the IP address (or you can use mDNS to navigate to hostname.local in a web browser - where hostname is whichever hostname you set in step 3 above). You should see one of the Home screens.  
+
+On the Home screen there are 2 modes, **Manual** and **Schedule:**
 
 <p align="center">
 <img width="582" height="378" alt="Home Screens" src="https://github.com/user-attachments/assets/c71fd184-3dae-4a74-a6bc-ecf965973fff" />
