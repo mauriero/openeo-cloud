@@ -14,7 +14,7 @@ EO Mini Pro 2
 </p>
 
 # Install Instructions
-This software can be installed onto a Raspberry OS Lite install. We recommend that you keep your original EO SD card safe and separate, so that you can revert easily, should things don't work out for you.
+This software can be installed onto a Raspberry OS Lite install. We recommend that you keep your original EO SD card safe and separate, so that you can revert easily, should things not work out for you.
 
 1.  Obtain a 8GB (or larger) micro SD card
 
