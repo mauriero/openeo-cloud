@@ -1,6 +1,6 @@
 # openeo-cloud
 # Modified code for EV charger EO Mini Pro 2 which allows mains top-up to minimum current when clouds cover solar panels and a selectable charging percentage target.
-This project is an alternative to the solution provided by **openeo** developers and contributors for those who wish to charge to a preset percentage and who wish to top-up solar current to a minimum of 6A from the mains instead of stopping charging when clouds reduce solar output. It aims to provide an alternative, open source software that can be directly installed on the EO Mini Pro 2 to allow control from the local WiFi network without the use of the EO server.
+This project is an alternative to the solution provided by **openeo** developers and contributors (https://github.com/minceheid/openeo) for those who wish to charge to a preset percentage and who wish to top-up solar current to a minimum of 6A from the mains instead of stopping charging when clouds reduce solar output. It aims to provide an alternative, open source software that can be directly installed on the EO Mini Pro 2 to allow control from the local WiFi network without the use of the EO server.
 
 # Compatibility
 This project has been designed to be compatible with the EO Mini Pro 2 device. It does not support Mini Pro 3.
@@ -86,7 +86,7 @@ When set to Yes the car will start charging when the solar output reaches Solar 
 
 **End Solar Charging at** – This is a setting which stops the charger when the solar power falls below charging levels at the end of the day.
 
-**Statistics screen** – This is unchanged from **openeo v0.5.4**
+**Statistics screen** – This is unchanged from **openeo v0.5.4** (https://github.com/minceheid/openeo)
 
 ## Disclaimer
 The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.   Please see the important terms and conditions in the `LICENSE.txt` file.   The software has been developed by clean-room reverse engineering of the existing EO software and no copyrighted EO code is used in this application.  
